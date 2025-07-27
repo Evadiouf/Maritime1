@@ -51,8 +51,8 @@ const References = () => {
   ];
 
   const unitesData = [
-    { id: 1, name: "Unité Delta", zone: "Atlantique Nord-Est" },
-    { id: 2, name: "Unité Gamma", zone: "Méditerranée" },
+    { id: 1, name: "Unité Delta", zone: "Soumbédioune" },
+    { id: 2, name: "Unité Gamma", zone: "Saint-Louis" },
   ];
 
   const especesData = [

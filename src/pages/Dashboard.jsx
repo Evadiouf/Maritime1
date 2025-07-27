@@ -30,10 +30,10 @@ const Dashboard = () => {
   }
 
   const stats = [
-    { icon: Fish, label: "Captures certifiées", value: "1,247", color: "text-emerald-800" },
-    { icon: Shield, label: "Contrôles effectués", value: "89", color: "text-blue-800" },
-    { icon: Award, label: "Certifications actives", value: "156", color: "text-purple-800" },
-    { icon: Users, label: "Partenaires", value: "34", color: "text-orange-800" }
+    { icon: Fish, label: "Captures certifiées", value: "1,247", color: "text-blue-600" },
+    { icon: Shield, label: "Contrôles effectués", value: "89", color: "text-green-600" },
+    { icon: Award, label: "Certifications actives", value: "156", color: "text-purple-600" },
+    { icon: Users, label: "Partenaires", value: "34", color: "text-orange-600" }
   ];
 
   const quickActions = [
@@ -42,28 +42,28 @@ const Dashboard = () => {
       title: "Références",
       description: "Consulter la base de données des espèces",
       path: "/references",
-      color: "from-emerald-500 to-teal-500"
+      color: "from-blue-600 to-indigo-600"
     },
     {
       icon: Activity,
       title: "Suivi et contrôle",
       description: "Monitoring des activités de pêche",
       path: "/suivi-controle",
-      color: "from-blue-500 to-cyan-500"
+      color: "from-green-500 to-emerald-600"
     },
     {
       icon: Shield,
       title: "Traçabilité",
       description: "Traçage de la chaîne d'approvisionnement",
       path: "/tracabilite",
-      color: "from-purple-500 to-indigo-500"
+      color: "from-purple-600 to-pink-600"
     },
     {
       icon: Award,
       title: "Certification",
       description: "Certification des captures",
       path: "/certification",
-      color: "from-orange-500 to-red-500"
+      color: "from-orange-500 to-amber-600"
     }
   ];
 
@@ -187,9 +187,9 @@ const Dashboard = () => {
               
               <div className="space-y-4">
                 {[
-                  { action: "Nouvelle certification", item: "Thon rouge - Lot #TR2024-001", time: "Il y a 2 heures", icon: Award },
-                  { action: "Contrôle qualité", item: "Sardines - Zone Atlantique Nord", time: "Il y a 4 heures", icon: Shield },
-                  { action: "Mise à jour traçabilité", item: "Anchois - Bateau Neptune", time: "Il y a 6 heures", icon: Activity }
+                  { action: "Nouvelle certification", item: "Thon rouge - Lot #TR2024-001", time: "Il y a 2 heures", icon: Award, color: "text-orange-600" },
+                  { action: "Contrôle qualité", item: "Sardines - Zone Atlantique Nord", time: "Il y a 4 heures", icon: Shield, color: "text-green-600" },
+                  { action: "Mise à jour traçabilité", item: "Anchois - Bateau Neptune", time: "Il y a 6 heures", icon: Activity, color: "text-blue-600" }
                 ].map((activity, index) => {
                   const Icon = activity.icon;
                   return (
@@ -200,7 +200,7 @@ const Dashboard = () => {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.4, delay: 0.7 + index * 0.1 }}
                     >
-                      <Icon className="w-8 h-8 text-emerald-800" />
+                      <Icon className={`w-8 h-8 ${activity.color}`} />
                       <div className="flex-1">
                         <p className="text-gray-900 font-medium">{activity.action}</p>
                         <p className="text-gray-600 text-sm">{activity.item}</p>

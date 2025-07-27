@@ -13,22 +13,26 @@ const HomePage = () => {
     {
       icon: Database,
       title: "Références",
-      description: "Base de données complète des espèces marines et réglementations"
+      description: "Base de données complète des espèces marines et réglementations",
+      color: "from-blue-600 to-indigo-600"
     },
     {
       icon: Activity,
       title: "Suivi et contrôle",
-      description: "Monitoring en temps réel des activités de pêche"
+      description: "Monitoring en temps réel des activités de pêche",
+      color: "from-green-500 to-emerald-600"
     },
     {
       icon: Shield,
       title: "Traçabilité",
-      description: "Traçage complet de la chaîne d'approvisionnement"
+      description: "Traçage complet de la chaîne d'approvisionnement",
+      color: "from-purple-600 to-pink-600"
     },
     {
       icon: Award,
       title: "Certification",
-      description: "Certification des captures selon les standards internationaux"
+      description: "Certification des captures selon les standards internationaux",
+      color: "from-orange-500 to-amber-600"
     }
   ];
 
@@ -146,7 +150,7 @@ const HomePage = () => {
                 
                 <div className="flex items-center space-x-2 text-emerald-700">
                   <Shield className="w-5 h-5" />
-                  <span className="text-sm">Certifié ISO 14001</span>
+                 
                 </div>
               </motion.div>
             </motion.div>
@@ -169,8 +173,8 @@ const HomePage = () => {
                     transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
                     whileHover={{ scale: 1.05 }}
                   >
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-emerald-800 to-blue-800 flex items-center justify-center">
-                      <Icon className="w-8 h-8 text-gray-900" />
+                    <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r ${feature.color} flex items-center justify-center`}>
+                      <Icon className="w-8 h-8 text-white" />
                     </div>
                     <h3 className="text-xl font-semibold text-emerald-700 mb-3">{feature.title}</h3>
                     <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
@@ -190,21 +194,21 @@ const HomePage = () => {
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 <div>
                   <p className="text-gray-700 leading-relaxed mb-4">
-                    ECOSPECHE révolutionne l'industrie maritime en offrant une plateforme 
-                    complète de gestion durable des ressources océaniques. Notre technologie 
-                    avancée permet un suivi en temps réel, une traçabilité transparente et 
-                    une certification rigoureuse.
+                    Notre mission chez ECOSPECHE est de proposer une solution digitale innovante (web) 
+                    pour accompagner la gestion intégrée des activités de pêche : aménagement des pêcheries, 
+                    surveillance, transformation et préservation de l'environnement marin.
                   </p>
                   <p className="text-gray-700 leading-relaxed">
-                    Ensemble, construisons un avenir où la pêche responsable et la préservation 
-                    marine vont de pair pour les générations futures.
+                    En assurant une traçabilité rigoureuse, nous permettons aux acteurs du secteur 
+                    de commercialiser leurs produits selon les normes en vigueur sur les marchés local 
+                    et européen, avec un certificat de capture authentifié par QR Code.
                   </p>
                 </div>
                 <div className="text-center">
                   <img  
                     className="w-full h-64 object-cover rounded-xl"
                     alt="Pêche durable en mer"
-                   src="https://images.unsplash.com/photo-1628213524301-2662fc2de56e" />
+                   src="src/assets/images/bateau.png" />
                 </div>
               </div>
             </motion.div>
