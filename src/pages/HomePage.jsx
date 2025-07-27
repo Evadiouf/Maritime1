@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import AuthModal from '@/components/AuthModal';
 import { Ship, Waves, Fish, Shield, Award, Activity, Database, Anchor } from 'lucide-react';
+import bateauImage from '@/assets/images/bateau.png';
 
 const HomePage = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -208,7 +209,7 @@ const HomePage = () => {
                   <img  
                     className="w-full h-64 object-cover rounded-xl"
                     alt="Pêche durable en mer"
-                   src="src/assets/images/bateau.png" />
+                    src={bateauImage} />
                 </div>
               </div>
             </motion.div>
