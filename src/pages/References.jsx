@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Database, Search, Fish, Ship, FileText, Anchor, PlusCircle, List, MapPin } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polygon, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 
 // Fix for default marker icon issue with webpack
@@ -196,27 +196,309 @@ const References = () => {
 
               <TabsContent value="zones">
                 <div className="card-maritime p-6 rounded-xl mt-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Carte des Zones de Capture</h2>
-                  <div className="h-[600px] w-full rounded-lg overflow-hidden border-2 border-emerald-200">
-                    <MapContainer center={[14.5, -14.5]} zoom={7} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
-                      <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      />
-                      {captureZonesData.map(zone => (
-                        <Marker key={zone.id} position={zone.position}>
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900">Gestion des Zones de Capture</h2>
+                  </div>
+                  
+                  {/* Formulaire d'ajout de zone */}
+                  <div className="bg-white p-6 rounded-lg border border-gray-200 mb-6">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Nouvelle Zone de Capture</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Nom de la zone */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Nom de la zone *
+                        </label>
+                        <Input 
+                          placeholder="Ex: Zone de pêche au large de Dakar"
+                          className="w-full"
+                        />
+                      </div>
+
+                      {/* Espèces */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Espèces autorisées *
+                        </label>
+                        <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                          <option value="">Sélectionner les espèces</option>
+                          <option value="thon-rouge">Thon rouge</option>
+                          <option value="sardine">Sardine</option>
+                          <option value="sardinelle">Sardinelle</option>
+                          <option value="crevette">Crevette</option>
+                          <option value="merou">Mérou</option>
+                          <option value="barracuda">Barracuda</option>
+                        </select>
+                      </div>
+
+                      {/* Période d'ouverture */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Période d'ouverture
+                        </label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Input 
+                            type="date" 
+                            placeholder="Date d'ouverture"
+                            className="w-full"
+                          />
+                          <Input 
+                            type="date" 
+                            placeholder="Date de fermeture"
+                            className="w-full"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Coordonnées GPS */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Coordonnées GPS (minimum 3 points) *
+                        </label>
+                        <div className="space-y-2">
+                          <div className="flex gap-2">
+                            <Input 
+                              type="number" 
+                              step="any"
+                              placeholder="Latitude 1"
+                              className="flex-1"
+                            />
+                            <Input 
+                              type="number" 
+                              step="any"
+                              placeholder="Longitude 1"
+                              className="flex-1"
+                            />
+                          </div>
+                          <div className="flex gap-2">
+                            <Input 
+                              type="number" 
+                              step="any"
+                              placeholder="Latitude 2"
+                              className="flex-1"
+                            />
+                            <Input 
+                              type="number" 
+                              step="any"
+                              placeholder="Longitude 2"
+                              className="flex-1"
+                            />
+                          </div>
+                          <div className="flex gap-2">
+                            <Input 
+                              type="number" 
+                              step="any"
+                              placeholder="Latitude 3"
+                              className="flex-1"
+                            />
+                            <Input 
+                              type="number" 
+                              step="any"
+                              placeholder="Longitude 3"
+                              className="flex-1"
+                            />
+                          </div>
+                          <Button variant="outline" size="sm" className="w-full">
+                            + Ajouter un point supplémentaire
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 mt-6">
+                      <Button className="btn-ocean">
+                        Enregistrer la zone
+                      </Button>
+                      <Button variant="outline">
+                        Annuler
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Carte de pêche détaillée */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Carte de Pêche - Côte Sénégalaise</h3>
+                    <div className="h-[600px] w-full rounded-lg overflow-hidden border-2 border-emerald-200 relative">
+                      <MapContainer center={[14.7167, -17.4677]} zoom={8} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
+                        <TileLayer
+                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                        
+                        {/* Zone A - Dakar Offshore */}
+                        <Polygon 
+                          positions={[
+                            [14.8, -17.6], [14.9, -17.6], [14.9, -17.4], [14.8, -17.4], [14.8, -17.6]
+                          ]}
+                          pathOptions={{ color: '#3B82F6', fillColor: '#3B82F6', fillOpacity: 0.3, weight: 2 }}
+                        >
                           <Popup>
                             <div className="font-sans">
-                              <h3 className="font-bold text-md text-emerald-700">{zone.espece}</h3>
-                              <p className="text-sm text-gray-600">Quantité: {zone.quantite}</p>
-                              <p className="text-xs text-gray-400">
-                                Lat: {zone.position[0]}, Lon: {zone.position[1]}
-                              </p>
+                              <h3 className="font-bold text-md text-blue-700">Zone A - Dakar Offshore</h3>
+                              <p className="text-sm text-gray-600"><strong>Espèces:</strong> Thon rouge, Barracuda</p>
+                              <p className="text-sm text-gray-600"><strong>Période:</strong> Janvier - Juin</p>
+                              <p className="text-xs text-gray-400">Profondeur: 50-200m</p>
+                            </div>
+                          </Popup>
+                        </Polygon>
+
+                        {/* Zone B - Saint-Louis Coastal */}
+                        <Polygon 
+                          positions={[
+                            [16.0, -16.6], [16.1, -16.6], [16.1, -16.4], [16.0, -16.4], [16.0, -16.6]
+                          ]}
+                          pathOptions={{ color: '#10B981', fillColor: '#10B981', fillOpacity: 0.3, weight: 2 }}
+                        >
+                          <Popup>
+                            <div className="font-sans">
+                              <h3 className="font-bold text-md text-emerald-700">Zone B - Saint-Louis Coastal</h3>
+                              <p className="text-sm text-gray-600"><strong>Espèces:</strong> Sardine, Sardinelle</p>
+                              <p className="text-sm text-gray-600"><strong>Période:</strong> Octobre - Mars</p>
+                              <p className="text-xs text-gray-400">Profondeur: 20-100m</p>
+                            </div>
+                          </Popup>
+                        </Polygon>
+
+                        {/* Zone C - Thiès Shelf */}
+                        <Polygon 
+                          positions={[
+                            [14.6, -17.2], [14.7, -17.2], [14.7, -17.0], [14.6, -17.0], [14.6, -17.2]
+                          ]}
+                          pathOptions={{ color: '#F59E0B', fillColor: '#F59E0B', fillOpacity: 0.3, weight: 2 }}
+                        >
+                          <Popup>
+                            <div className="font-sans">
+                              <h3 className="font-bold text-md text-amber-700">Zone C - Thiès Shelf</h3>
+                              <p className="text-sm text-gray-600"><strong>Espèces:</strong> Mérou, Crevette</p>
+                              <p className="text-sm text-gray-600"><strong>Période:</strong> Avril - Septembre</p>
+                              <p className="text-xs text-gray-400">Profondeur: 30-150m</p>
+                            </div>
+                          </Popup>
+                        </Polygon>
+
+                        {/* Zone D - Sine-Saloum Delta */}
+                        <Polygon 
+                          positions={[
+                            [13.8, -16.8], [13.9, -16.8], [13.9, -16.6], [13.8, -16.6], [13.8, -16.8]
+                          ]}
+                          pathOptions={{ color: '#8B5CF6', fillColor: '#8B5CF6', fillOpacity: 0.3, weight: 2 }}
+                        >
+                          <Popup>
+                            <div className="font-sans">
+                              <h3 className="font-bold text-md text-purple-700">Zone D - Sine-Saloum Delta</h3>
+                              <p className="text-sm text-gray-600"><strong>Espèces:</strong> Crevette, Poisson-chat</p>
+                              <p className="text-sm text-gray-600"><strong>Période:</strong> Toute l'année</p>
+                              <p className="text-xs text-gray-400">Profondeur: 5-50m</p>
+                            </div>
+                          </Popup>
+                        </Polygon>
+
+                        {/* Villes principales */}
+                        <Marker position={[14.7167, -17.4677]} icon={L.divIcon({
+                          className: 'custom-div-icon',
+                          html: '<div style="background-color: #DC2626; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;"></div>',
+                          iconSize: [12, 12],
+                          iconAnchor: [6, 6]
+                        })}>
+                          <Popup>
+                            <div className="font-sans">
+                              <h3 className="font-bold text-md text-red-700">Dakar</h3>
+                              <p className="text-sm text-gray-600">Capitale du Sénégal</p>
                             </div>
                           </Popup>
                         </Marker>
-                      ))}
-                    </MapContainer>
+
+                        <Marker position={[16.0333, -16.5000]} icon={L.divIcon({
+                          className: 'custom-div-icon',
+                          html: '<div style="background-color: #DC2626; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;"></div>',
+                          iconSize: [12, 12],
+                          iconAnchor: [6, 6]
+                        })}>
+                          <Popup>
+                            <div className="font-sans">
+                              <h3 className="font-bold text-md text-red-700">Saint-Louis</h3>
+                              <p className="text-sm text-gray-600">Ancienne capitale</p>
+                            </div>
+                          </Popup>
+                        </Marker>
+
+                        <Marker position={[14.7833, -16.9333]} icon={L.divIcon({
+                          className: 'custom-div-icon',
+                          html: '<div style="background-color: #DC2626; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;"></div>',
+                          iconSize: [12, 12],
+                          iconAnchor: [6, 6]
+                        })}>
+                          <Popup>
+                            <div className="font-sans">
+                              <h3 className="font-bold text-md text-red-700">Thiès</h3>
+                              <p className="text-sm text-gray-600">Ville industrielle</p>
+                            </div>
+                          </Popup>
+                        </Marker>
+
+                        <Marker position={[14.1667, -16.8333]} icon={L.divIcon({
+                          className: 'custom-div-icon',
+                          html: '<div style="background-color: #DC2626; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;"></div>',
+                          iconSize: [12, 12],
+                          iconAnchor: [6, 6]
+                        })}>
+                          <Popup>
+                            <div className="font-sans">
+                              <h3 className="font-bold text-md text-red-700">Kaolack</h3>
+                              <p className="text-sm text-gray-600">Port fluvial</p>
+                            </div>
+                          </Popup>
+                        </Marker>
+
+                        {/* Frontière maritime */}
+                        <Polyline 
+                          positions={[
+                            [12.5, -16.8], [12.5, -17.5], [12.5, -18.0]
+                          ]}
+                          pathOptions={{ color: '#1F2937', weight: 3, dashArray: '10, 5' }}
+                        >
+                          <Popup>
+                            <div className="font-sans">
+                              <h3 className="font-bold text-md text-gray-700">Frontière Maritime</h3>
+                              <p className="text-sm text-gray-600">Limite des eaux territoriales</p>
+                            </div>
+                          </Popup>
+                        </Polyline>
+
+                      </MapContainer>
+
+                      {/* Légende */}
+                      <div className="absolute top-4 right-4 bg-white p-4 rounded-lg shadow-lg border border-gray-200 max-w-xs">
+                        <h4 className="font-bold text-sm text-gray-800 mb-3">Légende des Zones</h4>
+                        <div className="space-y-2 text-xs">
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                            <span><strong>Zone A:</strong> Thon rouge, Barracuda</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 bg-emerald-500 rounded"></div>
+                            <span><strong>Zone B:</strong> Sardine, Sardinelle</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 bg-amber-500 rounded"></div>
+                            <span><strong>Zone C:</strong> Mérou, Crevette</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 bg-purple-500 rounded"></div>
+                            <span><strong>Zone D:</strong> Crevette, Poisson-chat</span>
+                          </div>
+                          <div className="flex items-center gap-2 mt-3">
+                            <div className="w-3 h-3 bg-red-600 rounded-full"></div>
+                            <span>Villes principales</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-1 bg-gray-700 border-dashed border-2"></div>
+                            <span>Frontière maritime</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </TabsContent>
