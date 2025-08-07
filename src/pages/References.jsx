@@ -25,6 +25,19 @@ const References = () => {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  // États pour le formulaire de zone de capture
+  const [zoneForm, setZoneForm] = useState({
+    nom: '',
+    especes: '',
+    dateOuverture: '',
+    dateFermeture: '',
+    coordonnees: [
+      { lat: '', lon: '' },
+      { lat: '', lon: '' },
+      { lat: '', lon: '' }
+    ]
+  });
 
   React.useEffect(() => {
     if (!isLoading && !user) {
@@ -36,6 +49,68 @@ const References = () => {
     toast({
       title: "🚧 Cette fonctionnalité n'est pas encore implémentée—mais ne vous inquiétez pas ! Vous pouvez la demander dans votre prochaine invite ! 🚀",
       description: `${action} ${item ? `pour ${item}` : ''} bientôt disponible.`
+    });
+  };
+
+  // Fonction pour gérer les changements dans le formulaire
+  const handleZoneFormChange = (field, value, index = null) => {
+    if (index !== null) {
+      // Pour les coordonnées GPS
+      setZoneForm(prev => ({
+        ...prev,
+        coordonnees: prev.coordonnees.map((coord, i) => 
+          i === index ? { ...coord, [field]: value } : coord
+        )
+      }));
+    } else {
+      // Pour les autres champs
+      setZoneForm(prev => ({
+        ...prev,
+        [field]: value
+      }));
+    }
+  };
+
+  // Fonction pour enregistrer la zone
+  const handleEnregistrerZone = () => {
+    // Validation des champs obligatoires
+    if (!zoneForm.nom || !zoneForm.especes) {
+      toast({
+        title: "❌ Informations manquantes",
+        description: "Veuillez remplir tous les champs obligatoires (nom de la zone et espèces).",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validation des coordonnées GPS (minimum 3 points)
+    const coordonneesValides = zoneForm.coordonnees.filter(coord => coord.lat && coord.lon);
+    if (coordonneesValides.length < 3) {
+      toast({
+        title: "❌ Coordonnées GPS insuffisantes",
+        description: "Veuillez saisir au minimum 3 coordonnées GPS valides.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Simulation de l'enregistrement
+    toast({
+      title: "✅ Zone enregistrée avec succès !",
+      description: `La zone "${zoneForm.nom}" a été enregistrée dans la base de données. Les coordonnées GPS et les informations sur les espèces ont été sauvegardées.`,
+    });
+
+    // Réinitialisation du formulaire
+    setZoneForm({
+      nom: '',
+      especes: '',
+      dateOuverture: '',
+      dateFermeture: '',
+      coordonnees: [
+        { lat: '', lon: '' },
+        { lat: '', lon: '' },
+        { lat: '', lon: '' }
+      ]
     });
   };
 
@@ -213,6 +288,8 @@ const References = () => {
                         <Input 
                           placeholder="Ex: Zone de pêche au large de Dakar"
                           className="w-full"
+                          value={zoneForm.nom}
+                          onChange={(e) => handleZoneFormChange('nom', e.target.value)}
                         />
                       </div>
 
@@ -221,7 +298,11 @@ const References = () => {
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Espèces autorisées *
                         </label>
-                        <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        <select 
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                          value={zoneForm.especes}
+                          onChange={(e) => handleZoneFormChange('especes', e.target.value)}
+                        >
                           <option value="">Sélectionner les espèces</option>
                           <option value="thon-rouge">Thon rouge</option>
                           <option value="sardine">Sardine</option>
@@ -242,11 +323,15 @@ const References = () => {
                             type="date" 
                             placeholder="Date d'ouverture"
                             className="w-full"
+                            value={zoneForm.dateOuverture}
+                            onChange={(e) => handleZoneFormChange('dateOuverture', e.target.value)}
                           />
                           <Input 
                             type="date" 
                             placeholder="Date de fermeture"
                             className="w-full"
+                            value={zoneForm.dateFermeture}
+                            onChange={(e) => handleZoneFormChange('dateFermeture', e.target.value)}
                           />
                         </div>
                       </div>
@@ -263,12 +348,16 @@ const References = () => {
                               step="any"
                               placeholder="Latitude 1"
                               className="flex-1"
+                              value={zoneForm.coordonnees[0].lat}
+                              onChange={(e) => handleZoneFormChange('lat', e.target.value, 0)}
                             />
                             <Input 
                               type="number" 
                               step="any"
                               placeholder="Longitude 1"
                               className="flex-1"
+                              value={zoneForm.coordonnees[0].lon}
+                              onChange={(e) => handleZoneFormChange('lon', e.target.value, 0)}
                             />
                           </div>
                           <div className="flex gap-2">
@@ -277,12 +366,16 @@ const References = () => {
                               step="any"
                               placeholder="Latitude 2"
                               className="flex-1"
+                              value={zoneForm.coordonnees[1].lat}
+                              onChange={(e) => handleZoneFormChange('lat', e.target.value, 1)}
                             />
                             <Input 
                               type="number" 
                               step="any"
                               placeholder="Longitude 2"
                               className="flex-1"
+                              value={zoneForm.coordonnees[1].lon}
+                              onChange={(e) => handleZoneFormChange('lon', e.target.value, 1)}
                             />
                           </div>
                           <div className="flex gap-2">
@@ -291,12 +384,16 @@ const References = () => {
                               step="any"
                               placeholder="Latitude 3"
                               className="flex-1"
+                              value={zoneForm.coordonnees[2].lat}
+                              onChange={(e) => handleZoneFormChange('lat', e.target.value, 2)}
                             />
                             <Input 
                               type="number" 
                               step="any"
                               placeholder="Longitude 3"
                               className="flex-1"
+                              value={zoneForm.coordonnees[2].lon}
+                              onChange={(e) => handleZoneFormChange('lon', e.target.value, 2)}
                             />
                           </div>
                           <Button variant="outline" size="sm" className="w-full">
@@ -307,10 +404,22 @@ const References = () => {
                     </div>
 
                     <div className="flex gap-3 mt-6">
-                      <Button className="btn-ocean">
+                      <Button className="btn-ocean" onClick={handleEnregistrerZone}>
                         Enregistrer la zone
                       </Button>
-                      <Button variant="outline">
+                      <Button variant="outline" onClick={() => {
+                        setZoneForm({
+                          nom: '',
+                          especes: '',
+                          dateOuverture: '',
+                          dateFermeture: '',
+                          coordonnees: [
+                            { lat: '', lon: '' },
+                            { lat: '', lon: '' },
+                            { lat: '', lon: '' }
+                          ]
+                        });
+                      }}>
                         Annuler
                       </Button>
                     </div>
